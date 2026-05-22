@@ -95,7 +95,7 @@ def is_critical_error(error: Exception) -> bool:
         return False
 
     if isinstance(error, tuple(DISCORD_API_ERRORS.keys())):
-        return False
+        return True
 
     if isinstance(error, commands.CommandError):
         return False
