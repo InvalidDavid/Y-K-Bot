@@ -513,7 +513,16 @@ class ErrorHandler(commands.Cog):
             return
 
         known = resolve_known_error(error)
+
         if known is not None:
+
+            if self.webhook_logger is not None:
+                await self.webhook_logger.send_error(
+                    ctx,
+                    error,
+                    source=f"Known error: {type(error).__name__}"
+                )
+
             title, description = known
             await self.send_error_embed(ctx, title, description, ephemeral=False)
             return
@@ -546,7 +555,16 @@ class ErrorHandler(commands.Cog):
         self._prune_slash_error_cache()
 
         known = resolve_known_error(error)
+
         if known is not None:
+
+            if self.webhook_logger is not None:
+                await self.webhook_logger.send_error(
+                    ctx,
+                    error,
+                    source=f"Known error: {type(error).__name__}"
+                )
+
             title, description = known
             await self.send_error_embed(ctx, title, description, ephemeral=True)
             return
