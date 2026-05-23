@@ -132,92 +132,6 @@ class ModC(commands.Cog):
             else:
                 self._thread_tag_changes.pop(thread_id, None)
 
-    # If you want in a specific thread channel to have a automatic message that pins and sends a embed then u can remove the # with "strg + /" or "ctrl + /" dont forget to mark it.
-    # and change in THREADID the correct channel id, else u can complelty remove it
-
-    # @commands.Cog.listener()
-    # async def on_thread_create(self, thread: discord.Thread):
-    #     if not isinstance(thread.parent, discord.ForumChannel):
-    #         return
-
-    #     if thread.parent.id != 1488486275898933288:
-    #         return
-
-    #     pin_notice = None
-
-    #     me = thread.guild.me
-    #     if me is None and self.bot.user is not None:
-    #         me = thread.guild.get_member(self.bot.user.id)
-
-    #     if me is None:
-    #         pin_notice = "Couldn't pin starter message, could not resolve bot member."
-    #     else:
-    #         permissions = thread.permissions_for(me)
-
-    #         can_pin = (
-    #             getattr(permissions, "pin_messages", False)
-    #             or getattr(permissions, "manage_messages", False)
-    #         )
-
-    #         if not can_pin:
-    #             pin_notice = "Couldn't pin starter message, missing pin/manage messages permission."
-    #         else:
-    #             starter_msg = None
-
-    #             for attempt in range(5):
-    #                 try:
-    #                     starter_msg = await thread.fetch_message(thread.id)
-    #                     break
-    #                 except discord.NotFound:
-    #                     await asyncio.sleep(1 + attempt)
-    #                 except discord.Forbidden:
-    #                     pin_notice = "Couldn't pin starter message, missing permissions."
-    #                     break
-    #                 except discord.HTTPException:
-    #                     await asyncio.sleep(1 + attempt)
-
-    #             if starter_msg is None and pin_notice is None:
-    #                 pin_notice = "Couldn't find the starter message to pin."
-
-    #             if starter_msg is not None:
-    #                 try:
-    #                     await starter_msg.pin(
-    #                         reason=f"Auto-pin support starter message in thread {thread.id}"
-    #                     )
-    #                 except discord.Forbidden:
-    #                     pin_notice = "Couldn't pin starter message, missing permissions."
-    #                 except discord.NotFound:
-    #                     pin_notice = "Couldn't find the starter message to pin."
-    #                 except discord.HTTPException as e:
-    #                     pin_notice = f"Couldn't pin starter message due to a Discord API error: {e}"
-
-    #     embed = discord.Embed(
-    #         title="Support Channel",
-    #         description=(
-    #             "Rules for asking for support:\n"
-    #             "1. - <#1484655685542350990>\n"
-    #             "2. - <#1488492402623905913>.\n"
-    #         ),
-    #         color=discord.Color.red()
-    #     )
-    #     embed.set_footer(text="You can use /close to close your post.")
-
-    #     content = f"<@{thread.owner_id}>"
-    #     if pin_notice:
-    #         content += f"\n-# {pin_notice}"
-
-    #     for attempt in range(5):
-    #         try:
-    #             await thread.send(content=content, embed=embed)
-    #             return
-    #         except discord.Forbidden as e:
-    #             if "40058" in str(e):
-    #                 await asyncio.sleep(1 + attempt)
-    #                 continue
-    #             raise
-    #         except discord.HTTPException:
-    #             await asyncio.sleep(1 + attempt)
-
     @mod.command(name="purge", description="Clear messages with filters")
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -531,7 +445,7 @@ class ModC(commands.Cog):
         now_utc = datetime.now(timezone.utc)
         embed = discord.Embed(
             description=f"Author has closed the thread: `{thread.name}`",
-            color=discord.Color.embed_background(),
+            color=discord.Color.ash_theme(),
             timestamp=now_utc,
         )
 
