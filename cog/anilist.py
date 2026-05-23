@@ -8,7 +8,7 @@ logger = logging.getLogger("bot.anilist")
 class AniList(commands.Cog):
     ANILIST_API_URL = "https://graphql.anilist.co"
     ANILIST_LOGO_URL = "https://anilist.co/img/logo_al.png"
-    DEFAULT_EMBED_COLOR = discord.Color.embed_background()
+    DEFAULT_EMBED_COLOR = discord.Color.ash_theme()
 
     REQUEST_TIMEOUT_SECONDS = 10
     MAX_DESCRIPTION_WORDS = 45
