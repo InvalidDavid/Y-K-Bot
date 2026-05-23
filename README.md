@@ -32,7 +32,7 @@ v2 components builder website that can help to understand it better: https://dis
   </p>
 </div>
 
-# Give me some ⭐ pls 🐈‍⬛
+# v2.8 py-cord is needed.
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
