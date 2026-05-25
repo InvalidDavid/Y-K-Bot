@@ -864,8 +864,14 @@ class LogsMsgHelper:
         for sticker_id in created_ids:
             items.append(TextDisplay(f"Created {self.ARROW} {self._sticker_label(after_map[sticker_id])}"))
 
-        created_stickers = [after_map[sticker_id] for sticker_id in created_ids]
-        created_gallery = self._sticker_preview_gallery(created_stickers)
+        created_stickers = [
+            after_map[sticker_id]
+            for sticker_id in created_ids
+        ]
+
+        created_gallery = self._media_gallery(
+            stickers=created_stickers
+        )
 
         if created_gallery:
             items.append(
@@ -912,8 +918,14 @@ class LogsMsgHelper:
 
             items.append(TextDisplay(self._truncate("\n".join(lines), limit=1200)))
 
-        updated_stickers = [after_map[sticker_id] for sticker_id in updated_ids]
-        updated_gallery = self._sticker_preview_gallery(updated_stickers)
+        updated_stickers = [
+            after_map[sticker_id]
+            for sticker_id in updated_ids
+        ]
+
+        updated_gallery = self._media_gallery(
+            stickers=updated_stickers
+        )
 
         if updated_gallery:
             items.append(
