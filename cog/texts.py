@@ -1,10 +1,9 @@
 from utils.imports import *
 
 
-FAQ_CONTENT = """
-# FAQ
-
-## 1. General
+FAQ1 = """
+# ❓ FAQ
+## 🌐 General
 
 ### Will there be an iOS version?
 > No.
@@ -23,18 +22,20 @@ FAQ_CONTENT = """
 
 ### Can I apply backups from Tachiyomi to Usagi?
 > Possibly, but not officially.
+"""
 
-
-## 2. Sources
+FAQ2 = """
+## 🔍 Sources
 
 ### What are some recommended sources? What source is the best? What is the replacement for source X? Where to read manga Y?
 > No.
 
 ### I'm having an issue with X source
 > No. That's not our fault.
+"""
 
-
-## 3. Other
+FAQ3 = """
+## 🗂️ Other
 
 ### Q: Why does Usagi no longer integrate sources like Kotatsu did before?
 I decided to remove the library that has built-in Online sources for the following reasons:
@@ -67,7 +68,6 @@ I decided to remove the library that has built-in Online sources for the followi
 -# ©️ 2026 Usagi
 """
 
-
 class FAQView(discord.ui.DesignerView):
     def __init__(self):
         super().__init__(timeout=None)
@@ -79,103 +79,70 @@ class FAQView(discord.ui.DesignerView):
             emoji="📚",
         )
 
-        self.link_faq = discord.ui.Button(
+        self.link_announcements = discord.ui.Button(
             style=discord.ButtonStyle.link,
-            url="https://discord.com/channels/1484655684879519885/1507099046265880787",
-            label="Information",
-            emoji="ℹ️",
+            url="https://discord.com/channels/1484655684879519885/1484655685542350991",
+            label="Download Latest Update",
+            emoji="🔄",
         )
 
-        section = discord.ui.Section(
-            discord.ui.TextDisplay(
-                content=FAQ_CONTENT
-            ),
-            accessory=discord.ui.Thumbnail(
-                "https://cdn.discordapp.com/attachments/1487153908550729748/1507140038935449641/faq-svgrepo-com.png?ex=6a10d10a&is=6a0f7f8a&hm=b0fb5ef927d53ea1a7c66b38238eef70b98c14f9344bbb445f9f38117974667d&"
+        self.link_roles = discord.ui.Button(
+            style=discord.ButtonStyle.link,
+            url="https://discord.com/channels/1484655684879519885/1507099046265880787",
+            label="Roles",
+            emoji="🔥",
+        )
+
+        container1 = discord.ui.Container(
+            discord.ui.Section(
+                discord.ui.TextDisplay(
+                    content=FAQ1
+                ),
+                accessory=discord.ui.Thumbnail(
+                    "https://cdn.discordapp.com/attachments/1487153908550729748/1507140038935449641/faq-svgrepo-com.png?ex=6a10d10a&is=6a0f7f8a&hm=b0fb5ef927d53ea1a7c66b38238eef70b98c14f9344bbb445f9f38117974667d&"
+                )
             )
         )
 
-        container = discord.ui.Container(
-            section,
-            color=discord.Color.ash_theme(),
+        container2 = discord.ui.Container(
+            discord.ui.TextDisplay(
+                content=FAQ2
+            )
+        )
+        container3 = discord.ui.Container(
+            discord.ui.TextDisplay(
+                content=FAQ3
+            )
         )
 
         row = discord.ui.ActionRow(
             self.link_rules,
-            self.link_faq
+            self.link_announcements,
+            self.link_roles,
         )
 
-        self.add_item(container)
+        self.add_item(container1)
+        self.add_item(container2)
+        self.add_item(container3)
         self.add_item(row)
 
-
-class FAQ(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-        self._view_registered = False
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-
-        if not self._view_registered:
-            self.bot.add_view(InformationView())
-
-            self._view_registered = True
-
-    @slash_command()
-    @commands.is_owner()
-    async def faq(self, ctx: discord.ApplicationContext) -> None:
-
-        await ctx.respond(
-            "...",
-            ephemeral=True,
-        )
-
-        await ctx.channel.send(
-            view=FAQView(),
-            allowed_mentions=discord.AllowedMentions.none(),
-        )
-
-
-    @slash_command()
-    @commands.is_owner()
-    async def rules(self, ctx: discord.ApplicationContext) -> None:
-
-        await ctx.respond(
-            "...",
-            ephemeral=True,
-        )
-
-        await ctx.channel.send(
-            view=RulesView()
-        )
-
-    @slash_command()
-    @commands.is_owner()
-    async def information(self, ctx: discord.ApplicationContext) -> None:
-
-        await ctx.respond(
-            "...",
-            ephemeral=True,
-        )
-
-        await ctx.channel.send(
-            view=InformationView()
-        )
-
-
-def setup(bot):
-    bot.add_cog(FAQ(bot))
 
 class RulesView(discord.ui.DesignerView):
     def __init__(self):
         super().__init__(timeout=None)
 
-        self.link_information = discord.ui.Button(
+        self.link_roles = discord.ui.Button(
             style=discord.ButtonStyle.link,
             url="https://discord.com/channels/1484655684879519885/1507099046265880787",
-            label="Information",
-            emoji="ℹ️",
+            label="Roles",
+            emoji="🔥",
+        )
+
+        self.link_announcements = discord.ui.Button(
+            style=discord.ButtonStyle.link,
+            url="https://discord.com/channels/1484655684879519885/1484655685542350991",
+            label="Download Latest Update",
+            emoji="🔄",
         )
 
         self.link_faq = discord.ui.Button(
@@ -218,11 +185,11 @@ class RulesView(discord.ui.DesignerView):
                 """
             ),
 
-            color=discord.Color.green(),
         )
 
         row = discord.ui.ActionRow(
-            self.link_information,
+            self.link_announcements,
+            self.link_roles,
             self.link_faq
         )
 
@@ -230,21 +197,24 @@ class RulesView(discord.ui.DesignerView):
         self.add_item(row)
 
 
-class InformationView(discord.ui.DesignerView):
+class RolesView(discord.ui.DesignerView):
     def __init__(self):
         super().__init__(timeout=None)
 
         self.role_id = 1507330930686165063
-
-        thumbnail = discord.ui.Thumbnail(
-            "https://cdn.discordapp.com/attachments/1487153908550729748/1507340740361982002/info-square-svgrepo-com1.png"
-        )
 
         self.link_rules = discord.ui.Button(
             style=discord.ButtonStyle.link,
             url="https://discord.com/channels/1484655684879519885/1484655685542350990",
             label="Rules",
             emoji="📚",
+        )
+
+        self.link_announcements = discord.ui.Button(
+            style=discord.ButtonStyle.link,
+            url="https://discord.com/channels/1484655684879519885/1484655685542350991",
+            label="Download Latest Update",
+            emoji="🔄",
         )
 
         self.link_faq = discord.ui.Button(
@@ -254,45 +224,30 @@ class InformationView(discord.ui.DesignerView):
             emoji="❓",
         )
 
-
-        self.link_button = discord.ui.Button(
-            style=discord.ButtonStyle.blurple,
-            emoji="👥",
-            custom_id="link_button",
-        )
-
-        self.role_button = discord.ui.Button(
-            style=discord.ButtonStyle.green,
-            emoji="⭐",
-            custom_id="role_button",
-        )
-
         self.plugin_role_button = discord.ui.Button(
-            style=discord.ButtonStyle.grey,
-            emoji="📑",
+            style=discord.ButtonStyle.red,
+            emoji="🐦‍🔥",
             custom_id="plugin_role_button",
         )
 
-        self.link_button.callback = self.link_callback
-        self.role_button.callback = self.role_callback
         self.plugin_role_button.callback = self.plugin_role_callback
 
-        container = discord.ui.Container(
-            discord.ui.Section(
-                discord.ui.TextDisplay(
+        container1 = discord.ui.Container(
+            discord.ui.TextDisplay(
+                content="""
+# 🔥 Roles
+-  **Tip:** Check out <id:customize> to select roles.
+-# - If you are eligible for a role, simply contact an admin or moderator once you have fulfilled the requirements.
                     """
-# Information
+            ),
 
-*Click on the buttons for further Infos*
--# If you press on `📑` you will get a Role...
-                    """
+            discord.ui.ActionRow(
+                discord.ui.Button(
+                    style=discord.ButtonStyle.link,
+                    url="https://discord.com/channels/1484655684879519885/1488486579872989294",
+                    label="Click here to requests",
+                    emoji="📝",
                 ),
-                accessory=thumbnail,
-            ),
-
-            discord.ui.Section(
-                discord.ui.TextDisplay("Permanent Server Invite Link"),
-                accessory=self.link_button,
             ),
 
             discord.ui.Separator(
@@ -300,93 +255,89 @@ class InformationView(discord.ui.DesignerView):
                 spacing=discord.SeparatorSpacingSize.small,
             ),
 
-            discord.ui.Section(
-                discord.ui.TextDisplay("Role Info & Rewards"),
-                accessory=self.role_button,
-            ),
+            discord.ui.TextDisplay(
+                content="""
+## 🚬 Server Team
 
-            discord.ui.Separator(
-                divider=True,
-                spacing=discord.SeparatorSpacingSize.small,
-            ),
+- <@&1486482350320779416> - Owner.
+- <@&1505996941719371890> - Designs for our Server & Project. --> <@1031544793706274837>
+- <@&1485941316511727737> - The slaves that ensures everyone compliance with the rules.
+- <@&1484673277988306974> - Helpers of the Mods.
 
-            discord.ui.Section(
-                discord.ui.TextDisplay("Plugin Creator Role"),
-                accessory=self.plugin_role_button,
-            ),
+## 🛠️ Helpers
+- <@&1507858099384615055> - App contributions / project contributions: [Github](https://github.com/UsagiApp)
+- <@&1507858349285179513> - Translation for the project: [Weblate](https://hosted.weblate.org/projects/usagi/)
 
-            color=discord.Color.blurple(),
+-# - Minor changes do not automatically qualify, final decision is up to the dev team.
+-# - Always provide a link to the related GitHub PR or comment.  `(Check first sentence how to requests)`                 
+
+## 🏆 Reward Roles
+- <@&1504377838361383003> - Our gods whoever boosts.
+- <@&1507330930686165063> - Unknown.
+-# Press maybe the `🐦‍🔥` button.
+                    """
+            ),
+        )
+
+        container2 = discord.ui.Container(
+            discord.ui.TextDisplay(
+                content="""
+## ⭐ Level
+-# - Use </rank:1287124581131485330> in https://discord.com/channels/1484655684879519885/1508055170418999387 to see your rank.
+
+<@&1506622205155348680> - Lvl. 1
+[+] Change nickname
+
+<@&1506622232946933800> - Lvl. 3
+[+] Create public threads
+[+] Attach files
+
+<@&1506622265578623006> - Lvl. 5
+[+] Create polls
+
+<@&1506622288836034680> - Lvl. 10
+[+] Soundboard permisions
+
+<@&1506622319341342832> - Lvl. 15
+[+] Add an emoji / sticker / soundboard `(contact a mod)`
+
+<@&1506622340828631050> - Lvl. 20
+[+] Unemployment boss
+                """
+            )
+        )
+
+        container3 = discord.ui.Container(
+            discord.ui.TextDisplay(
+                content="""
+# 📝 Join us as Developer / Designer
+Click the button below to message <@809739434537910283> for further communication.
+                """
+            ),
+            discord.ui.ActionRow(
+                discord.ui.Button(
+                    style=discord.ButtonStyle.link,
+                    url="https://discord.com/channels/@me/809739434537910283",
+                    label="Join now",
+                    emoji="📝",
+                ),
+            ),
+            color=discord.Color.orange(),
         )
 
         row = discord.ui.ActionRow(
             self.link_rules,
-            self.link_faq
+            self.link_announcements,
+            self.link_faq,
+            self.plugin_role_button
         )
 
-        self.add_item(container)
+
+
+        self.add_item(container1)
+        self.add_item(container2)
+        self.add_item(container3)
         self.add_item(row)
-
-    async def link_callback(self, interaction: discord.Interaction):
-        await interaction.response.send_message(
-            "Link to join Usagi Discord server (fixed): https://discord.gg/4AHskjwtj4",
-            ephemeral=True
-        )
-
-    async def role_callback(self, interaction: discord.Interaction):
-        text = """
-# Leveling Infos
-Lvl. 1 - <@&1506622205155348680>
-[+] Attach files
-                
-Lvl. 3. - <@&1506622232946933800>
-[+] Create public threads
-                
-Lvl. 5 - <@&1506622265578623006>
-[+] be build diff.
-                
-Lvl.10 - <@&1506622288836034680>
-[+] High class
-                
-Lvl.15 - <@&1506622319341342832>
-[+] Noble
-                
-Lvl.20 - <@&1506622340828631050>
-[+] Unemployment boss
-
--# All those extra perms are stacked.
--# Any idea for perms ping the communist.
-
-# Booster Information
-
-Our god whoever boosts.
-
-# General Role Information
-
-Project Owner - <@&1486482350320779416>
-- Owner.
-
-Deisgners - <@&1505996941719371890>
-- Nice designs. 👍
-
-Mods - <@&1485941316511727737>
-- The slaves.
-
-Supporters - <@&1484673277988306974>
-- idk?
-
-
-Contributor - <@&1507858099384615055>
-- App contributions / project contributions
-
-Translator - <@&1507858349285179513>
-- Translation work within the project
-
-*Important notes for Contributors & Translators:*
--# Minor changes do not automatically qualify, final decision is up to the dev team
--# Always provide a link to the related GitHub PR or comment
--# After that, post a message here: https://discord.com/channels/1484655684879519885/1488486579872989294 and ping <@809739434537910283> (all in one message pls.)
-        """
-        return await interaction.response.send_message(text, ephemeral=True)
 
     async def plugin_role_callback(self, interaction: discord.Interaction):
         role = interaction.guild.get_role(self.role_id)
@@ -395,8 +346,346 @@ Translator - <@&1507858349285179513>
             return await interaction.response.send_message("Role not found.", ephemeral=True)
 
         if role in interaction.user.roles:
-            await interaction.user.remove_roles(role)
-            return await interaction.response.send_message("You clicked it again? Alright you greedy b*tch, I removed the role. <3", ephemeral=True)
+            await interaction.user.remove_roles(role, reason="button")
+            return await interaction.response.send_message(
+                "You clicked it again? Alright you greedy b*tch, I removed the role. <3", ephemeral=True)
 
-        await interaction.user.add_roles(role)
-        return await interaction.response.send_message("Yayyy you are a creator now. What this role can do? No idea.", ephemeral=True)
+        await interaction.user.add_roles(role, reason="button")
+        return await interaction.response.send_message("Yayyy you are a creator now. What this role can do? No idea.",
+                                                       ephemeral=True)
+
+ISSUES_LANGUAGES = {
+    "en": {
+        "container1": """
+# 🌍 ENGLISH
+-# - 🇷🇺 RUSSIAN & 🇻🇳 VIETNAM below use button
+
+### Read NOTES before submitting.
+""",
+        "container2": """
+## 🧾 ISSUE REPORT
+- Name: Problem
+- Description *(required)*
+- App version *(required)*
+- Steps to reproduce *(required)*
+- Frequency *(required)*
+- Device/ROM *(optional)*
+- Screenshot / video *(if needed)*
+
+-# ⚠️ Not for sync or update chapter issues.
+""",
+
+        "container3": """
+## ❓ QUESTION
+- Name: Question
+- Description *(required)*
+- App version *(required)*
+- Screenshot / video *(if needed)*
+-# --> Use for that please https://discord.com/channels/1484655684879519885/1488486579872989294!
+
+-# ⚠️ Only feature questions, no requests/suggestions.
+""",
+
+        "container4": """
+## 🔄 SYNC ISSUE
+- Name: Sync Problem
+- Description *(required)*
+- App version *(required)*
+- Device/ROM *(required)*
+- Frequency *(required)*
+- Screenshot / video *(if needed)*
+""",
+
+        "container5": """
+## 📚 UPDATE CHAPTERS
+- Name: Update Chapters Problem
+- Description *(required)*
+- App version *(required)*
+- Frequency *(required)*
+- Update log screenshot *(required)*
+- Extra proof *(if needed)*
+
+### ⚠️ NOTES
+-# - Only latest version supported → https://discord.com/channels/1484655684879519885/1484655685542350991
+-# - Use only **one tag**
+-# - Template may change — always check updates
+""",
+    },
+
+    "ru": {
+        "container1": """
+# 🌍 РУССКИЙ
+
+### Прочитайте NOTES перед отправкой.
+    """,
+
+        "container2": """
+## 🧾 ОТЧЁТ ОБ ОШИБКЕ
+- Название: Проблема
+- Описание *(обязательно)*
+- Версия приложения *(обязательно)*
+- Шаги для воспроизведения *(обязательно)*
+- Частота возникновения *(обязательно)*
+- Устройство / Прошивка *(необязательно)*
+- Скриншот / Видео *(при необходимости)*
+
+-# ⚠️ Не для проблем с синхронизацией или обновлением глав.
+    """,
+
+        "container3": """
+## ❓ ВОПРОС
+- Название: Вопрос
+- Описание *(обязательно)*
+- Версия приложения *(обязательно)*
+- Скриншот / видео *(при необходимости)*
+-# --> Для этого используйте пожалуйста https://discord.com/channels/1484655684879519885/1488486579872989294!
+
+-# ⚠️ Только вопросы о функциях, без запросов/предложений.
+    """,
+
+        "container4": """
+## 🔄 ПРОБЛЕМА С СИНХРОНИЗАЦИЕЙ
+- Название: Проблема с синхронизацией
+- Описание *(обязательно)*
+- Версия приложения *(обязательно)*
+- Устройство / ROM *(обязательно)*
+- Частота возникновения *(обязательно)*
+- Скриншот / видео *(при необходимости)*
+    """,
+
+        "container5": """
+## 📚 ОБНОВЛЕНИЕ ГЛАВ
+- Название: Проблема с обновлением глав
+- Описание *(обязательно)*
+- Версия приложения *(обязательно)*
+- Частота возникновения *(обязательно)*
+- Скриншот журнала обновлений *(обязательно)*
+- Дополнительные доказательства *(при необходимости)*
+
+### ⚠️ NOTES
+-# - Поддерживается только последняя версия → https://discord.com/channels/1484655684879519885/1484655685542350991
+-# - Используйте только **один тег**
+-# - Шаблон может измениться — всегда проверяйте обновления
+    """,
+    },
+
+    "vi": {
+        "container1": """
+# 🌍 VIỆT NAM
+
+### Đọc NOTES trước khi gửi.
+    """,
+
+        "container2": """
+## 🧾 BÁO CÁO LỖI
+- Tên: Vấn đề
+- Mô tả *(bắt buộc)*
+- Phiên bản ứng dụng *(bắt buộc)*
+- Các bước để tái hiện *(bắt buộc)*
+- Tần suất *(bắt buộc)*
+- Thiết bị/ROM *(tùy chọn)*
+- Ảnh chụp màn hình / video *(nếu cần)*
+
+-# ⚠️ Không dành cho lỗi đồng bộ hoặc cập nhật chương.
+    """,
+
+        "container3": """
+    ## ❓ CÂU HỎI
+- Tên: Câu hỏi
+- Mô tả *(bắt buộc)*
+- Phiên bản ứng dụng *(bắt buộc)*
+- Ảnh chụp màn hình / video *(nếu cần)*
+-# --> Vui lòng sử dụng cho việc đó https://discord.com/channels/1484655684879519885/1488486579872989294!
+
+-# ⚠️ Chỉ dành cho câu hỏi về tính năng, không phải yêu cầu/đề xuất.
+    """,
+
+        "container4": """
+## 🔄 LỖI ĐỒNG BỘ
+- Tên: Lỗi đồng bộ hóa
+- Mô tả *(bắt buộc)*
+- Phiên bản ứng dụng *(bắt buộc)*
+- Thiết bị/ROM *(bắt buộc)*
+- Tần suất *(bắt buộc)*
+- Ảnh chụp màn hình / video *(nếu cần)*
+    """,
+
+        "container5": """
+## 📚 CẬP NHẬT CHƯƠNG
+- Tên: Lỗi cập nhật chương
+- Mô tả *(bắt buộc)*
+- Phiên bản ứng dụng *(bắt buộc)*
+- Tần suất xảy ra *(bắt buộc)*
+- Ảnh chụp màn hình nhật ký cập nhật *(bắt buộc)*
+- Minh chứng bổ sung *(nếu cần)*
+
+### ⚠️ NOTES
+-# - Chỉ hỗ trợ phiên bản mới nhất → https://discord.com/channels/1484655684879519885/1484655685542350991
+-# - Chỉ sử dụng **một tag**
+-# - Mẫu có thể thay đổi — luôn kiểm tra cập nhật
+    """,
+    },
+
+}
+
+class IssuesView(discord.ui.DesignerView):
+    def __init__(self, lang: str = "en", show_buttons: bool = True):
+        super().__init__(timeout=None)
+        self.lang = ISSUES_LANGUAGES.get(
+            lang,
+            ISSUES_LANGUAGES["en"]
+        )
+
+
+        self.button_russia = discord.ui.Button(
+            style=discord.ButtonStyle.grey,
+            emoji="🇷🇺",
+            custom_id="button_russia",
+        )
+
+        self.button_vietnam = discord.ui.Button(
+            style=discord.ButtonStyle.grey,
+            emoji="🇻🇳",
+            custom_id="button_vietnam",
+        )
+
+        self.button_russia.callback = self.button_russia_callback
+        self.button_vietnam.callback = self.button_vietnam_callback
+
+        container1 = discord.ui.Container(
+            discord.ui.Section(
+            discord.ui.TextDisplay(
+                content=self.lang["container1"]
+            ),
+            accessory=discord.ui.Thumbnail(url="https://cdn.discordapp.com/attachments/1487153908550729748/1508574348267491550/copy-paste-document-svgrepo-com1.png?ex=6a1608d8&is=6a14b758&hm=b8e56ff5721b30db8e0f315c491917048d2ae879e9a85e253e4a398f962b6a16&")
+        )
+    )
+
+        container2 = discord.ui.Container(
+            discord.ui.TextDisplay(
+                content=self.lang["container2"]
+            )
+        )
+
+        container3 = discord.ui.Container(
+            discord.ui.TextDisplay(
+                content=self.lang["container3"]
+            )
+        )
+
+        container4 = discord.ui.Container(
+            discord.ui.TextDisplay(
+            content=self.lang["container4"]
+        )
+    )
+
+        container5 = discord.ui.Container(
+            discord.ui.TextDisplay(
+            content=self.lang["container5"]
+        )
+    )
+
+        self.add_item(container1)
+        self.add_item(container2)
+        self.add_item(container3)
+        self.add_item(container4)
+        self.add_item(container5)
+        if show_buttons:
+            self.add_item(
+                discord.ui.ActionRow(
+                    self.button_russia,
+                    self.button_vietnam
+                )
+            )
+
+    async def button_russia_callback(
+            self,
+            interaction: discord.Interaction
+    ):
+        await interaction.response.send_message(
+            view=IssuesView(
+                "ru",
+                show_buttons=False
+            ),
+            ephemeral=True
+        )
+
+    async def button_vietnam_callback(
+            self,
+            interaction: discord.Interaction
+    ):
+        await interaction.response.send_message(
+            view=IssuesView(
+                "vi",
+                show_buttons=False
+            ),
+            ephemeral=True
+        )
+
+class Texts(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self._view_registered = False
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        if not self._view_registered:
+            self.bot.add_view(RolesView())
+            self.bot.add_view(IssuesView())
+
+            self._view_registered = True
+
+    @slash_command()
+    @commands.is_owner()
+    async def panel(
+            self,
+            ctx: discord.ApplicationContext,
+            panel: discord.Option(
+                str,
+                choices=[
+                    "faq",
+                    "rules",
+                    "roles",
+                    "issues",
+                ]
+            )
+    ):
+
+        await ctx.respond(
+            "...",
+            ephemeral=True
+        )
+
+        if panel == "faq":
+            await ctx.channel.send(
+                view=FAQView(),
+                allowed_mentions=discord.AllowedMentions.none(),
+            )
+
+        elif panel == "rules":
+            await ctx.channel.send(
+                view=RulesView(),
+                allowed_mentions=discord.AllowedMentions.none(),
+            )
+            await ctx.channel.send(
+                """
+-# Permanent Invite Link:
+-# https://discord.gg/4AHskjwtj4
+                """
+            )
+
+        elif panel == "roles":
+            await ctx.channel.send(
+                view=RolesView(),
+                allowed_mentions=discord.AllowedMentions.none(),
+            )
+
+        elif panel == "issues":
+            await ctx.channel.send(
+                view=IssuesView(),
+                allowed_mentions=discord.AllowedMentions.none(),
+            )
+
+
+def setup(bot):
+    bot.add_cog(Texts(bot))
