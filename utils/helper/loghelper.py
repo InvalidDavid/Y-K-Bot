@@ -167,24 +167,6 @@ class LogsHelper:
         return MediaGallery(*items) if items else None
 
     @staticmethod
-    def _sticker_preview_gallery(stickers: Iterable[Any]) -> Optional[MediaGallery]:
-        items: list[Any] = []
-
-        for sticker in stickers:
-            url = getattr(sticker, "url", None)
-
-            if url is None:
-                asset = getattr(sticker, "asset", None)
-                url = getattr(asset, "url", None)
-
-            if not url:
-                continue
-
-            items.append(discord.MediaGalleryItem(url=str(url)))
-
-        return MediaGallery(*items) if items else None
-
-    @staticmethod
     def _channel_name(channel: Any) -> str:
         if channel is None:
             return "Unknown"
