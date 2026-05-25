@@ -77,12 +77,6 @@ class LogsMsgHelper:
 
         footer_text = self._moderator_footer_text(actor=actor, reason=reason, unknown=False)
         if footer_text:
-            items.append(
-                discord.ui.Separator(
-                    divider=True,
-                    spacing=discord.SeparatorSpacingSize.small,
-                )
-            )
             items.append(TextDisplay(footer_text))
 
         return DesignerView(
@@ -213,12 +207,6 @@ class LogsMsgHelper:
 
         footer_text = self._moderator_footer_text(actor=actor, reason=reason, unknown=False)
         if footer_text:
-            items.append(
-                discord.ui.Separator(
-                    divider=True,
-                    spacing=discord.SeparatorSpacingSize.small,
-                )
-            )
             items.append(TextDisplay(footer_text))
 
         return DesignerView(
@@ -441,12 +429,6 @@ class LogsMsgHelper:
 
         footer_text = self._moderator_footer_text(actor=actor, reason=reason, unknown=False)
         if footer_text:
-            items.append(
-                discord.ui.Separator(
-                    divider=True,
-                    spacing=discord.SeparatorSpacingSize.small,
-                )
-            )
             items.append(TextDisplay(footer_text))
 
         return DesignerView(
@@ -512,12 +494,6 @@ class LogsMsgHelper:
 
         footer_text = self._moderator_footer_text(actor=actor, reason=reason, unknown=False)
         if footer_text:
-            items.append(
-                discord.ui.Separator(
-                    divider=True,
-                    spacing=discord.SeparatorSpacingSize.small,
-                )
-            )
             items.append(TextDisplay(footer_text))
 
         return DesignerView(
