@@ -387,47 +387,18 @@ class ModC(commands.Cog):
             await ctx.respond("This command can only be used in a forum thread.", ephemeral=True)
             return
 
-        new_name = self._strip_lock_prefix(thread.name)
-        new_name = f"🔒 {new_name}"
-
         await ctx.respond(f"Closing thread `{thread.name}`", ephemeral=True)
 
         try:
             await thread.edit(
                 archived=True,
                 locked=True,
-                name=new_name,
                 reason=f"Thread closed by moderator {ctx.author} ({ctx.author.id})",
             )
         except discord.Forbidden:
             await ctx.respond("I don't have permission to close this thread.", ephemeral=True)
         except discord.HTTPException:
             await ctx.respond("Failed to close the thread.", ephemeral=True)
-
-    @forum.command(name="unlock", description="Unlock a thread")
-    @commands.guild_only()
-    @commands.has_permissions(manage_threads=True)
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def unlock_thread(self, ctx: discord.ApplicationContext):
-        thread = self._get_forum_thread(ctx.channel)
-        if thread is None:
-            await ctx.respond("This command can only be used in a forum thread.", ephemeral=True)
-            return
-
-        new_name = self._strip_lock_prefix(thread.name)
-
-        try:
-            await thread.edit(
-                archived=False,
-                locked=False,
-                name=new_name,
-                reason=f"Thread unlocked by moderator {ctx.author} ({ctx.author.id})",
-            )
-            await ctx.respond(f"Thread `{thread.name}` unlocked.", ephemeral=True)
-        except discord.Forbidden:
-            await ctx.respond("I don't have permission to unlock this thread.", ephemeral=True)
-        except discord.HTTPException:
-            await ctx.respond("Failed to unlock the thread.", ephemeral=True)
 
     @slash_command(name="close", description="Close and archive your thread (author only)")
     @commands.guild_only()
@@ -442,15 +413,16 @@ class ModC(commands.Cog):
             await ctx.respond("Only the thread author can close this thread.", ephemeral=True)
             return
 
-        now_utc = datetime.now(timezone.utc)
-        embed = discord.Embed(
-            description=f"Author has closed the thread: `{thread.name}`",
-            color=discord.Color.ash_theme(),
-            timestamp=now_utc,
+        container = discord.ui.DesignerView(
+            discord.ui.Container(
+                discord.ui.TextDisplay(
+                    content=f"{ctx.author.mention} has closed the thread: `{thread.name}`"
+                )
+            )
         )
 
         try:
-            await ctx.respond(embed=embed, ephemeral=False)
+            await ctx.respond(view=container)
             await thread.edit(
                 locked=True,
                 archived=True,
