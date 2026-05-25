@@ -1009,17 +1009,14 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
         if before.name != after.name:
             changes.append(f"Name {self.ARROW} `{before.name}` → `{after.name}`")
 
-        if before.color != after.color:
-            changes.append(f"Color {self.ARROW} `{before.color}` → `{after.color}`")
+        if before.colors.primary != after.colors.primary:
+            changes.append(f"Color {self.ARROW} `{before.colors.primary}` → `{after.colors.primary}`")
 
         if before.hoist != after.hoist:
             changes.append(f"Hoist {self.ARROW} `{before.hoist}` → `{after.hoist}`")
 
         if before.mentionable != after.mentionable:
             changes.append(f"Mentionable {self.ARROW} `{before.mentionable}` → `{after.mentionable}`")
-
-        if before.position != after.position:
-            changes.append(f"Position {self.ARROW} `{before.position}` → `{after.position}`")
 
         if before.permissions != after.permissions:
             changes.extend(
