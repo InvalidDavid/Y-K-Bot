@@ -549,15 +549,9 @@ class User(commands.Cog):
                         prefix=prefix_display,
                     )
 
-                    command_type = {
-                        "slash": "Slash",
-                        "prefix": "Prefix",
-                        "bridge": "Bridge",
-                    }.get(kind, "Command")
-
                     embed.add_field(
                         name=f"{command_emoji(name)} {label}",
-                        value=f"> `{command_type}` • {safe_plain(desc, limit=170)}",
+                        value=f"> {safe_plain(desc, limit=170)}",
                         inline=False,
                     )
 
