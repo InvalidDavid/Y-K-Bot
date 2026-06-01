@@ -17,6 +17,8 @@ from utils.secrets import (
 
 logger = logging.getLogger("bot.logging")
 
+IGNORE_USER = 954613690638929970
+
 # dont change that, may break
 NORMAL_DELETE_ATTACHMENT_CACHE_TTL = 10 * 60
 NORMAL_DELETE_ATTACHMENT_MAX_FILE_BYTES = 25 * 1024 * 1024
@@ -1056,6 +1058,9 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
         if msg_before.guild is None or not self._is_target_guild(msg_before.guild.id):
             return
 
+        if msg_before.author.id == IGNORE_USER:
+            return
+
         if msg_before.author.bot or msg_after.author.bot:
             return
 
@@ -1082,6 +1087,9 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
             if getattr(getattr(cached_message, "author", None), "bot", False):
                 return
 
+            if cached_message.author.id == IGNORE_USER:
+                return
+
             await self._send_deleted_message_log(
                 message_id=cached_message.id,
                 channel_id=cached_message.channel.id,
@@ -1090,19 +1098,13 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
             )
             return
 
-        meta = getattr(self, "_recent_message_meta", {}).get(int(payload.message_id))
-        if meta is None:
-            return
-
-        if meta.get("author_bot"):
-            return
-
         await self._send_deleted_message_log(
             message_id=payload.message_id,
             channel_id=payload.channel_id,
             guild_id=payload.guild_id,
             msg=None,
         )
+
 
     @commands.Cog.listener()
     async def on_raw_bulk_message_delete(self, payload: discord.RawBulkMessageDeleteEvent) -> None:
@@ -1303,13 +1305,16 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
         if message.guild is None:
             return
 
-        self._store_recent_message_meta(message)
-
         if message.author.bot:
+            return
+
+        if message.author.id == IGNORE_USER:
             return
 
         if not message.attachments:
             return
+
+        self._store_recent_message_meta(message)
 
         task = self._create_task(
             self._cache_message_attachments(message),
