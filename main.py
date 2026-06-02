@@ -35,9 +35,8 @@ class UsagiBot(commands.Bot):
     startup_logged: bool
 
 
-def build_bot() -> tuple[UsagiBot, Callable[[], Awaitable[None]]]:
+async def build_bot() -> tuple[UsagiBot, Callable[[], Awaitable[None]]]:
     bot = UsagiBot(
-        auto_sync_commands=True,
         intents=discord.Intents.all(),
         sync_commands=True,
         owner_ids=OWNER,
@@ -269,7 +268,7 @@ def build_bot() -> tuple[UsagiBot, Callable[[], Awaitable[None]]]:
 
 
 async def main() -> None:
-    bot, shutdown_bot = build_bot()
+    bot, shutdown_bot = await build_bot()
 
     await bot.global_cache.start()
 
