@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 import inspect
 
@@ -60,11 +61,7 @@ def setup_logging() -> logging.Logger:
     discord_logger = logging.getLogger("discord")
     discord_logger.setLevel(logging.INFO)
     discord_logger.propagate = False
-
-    if not discord_logger.handlers:
-        discord_logger.addHandler(console_handler)
-        discord_logger.addHandler(file_handler)
-        discord_logger.addHandler(error_handler)
+    discord_logger.handlers = logger.handlers
 
     return logger
 
