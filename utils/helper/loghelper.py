@@ -1419,10 +1419,22 @@ class LogsHelper:
         def channel_text(channel: Any) -> str:
             return self._guild_channel_ref(channel)
 
+        def server_icon(self, before: discord.Guild, after: discord.Guild):
+            if after.icon:
+                return MediaGallery(
+                    MediaGalleryItem(url=str(after.icon.url))
+                )
+            return None
+
         changes: list[str] = []
 
         before_name = text_or_none(before.name)
         after_name = text_or_none(after.name)
+
+        icon_gallery = self.server_icon(before, after)
+
+        if icon_gallery:
+            view.media_gallery = icon_gallery
 
         if before_name != after_name:
             changes.append(f"Name Changed {self.ARROW} `{before_name}` → `{after_name}`")
@@ -1523,6 +1535,17 @@ class LogsHelper:
                 f"System Channel Flags Removed {self.ARROW} "
                 + ", ".join(f"`{flag}`" for flag in removed_flags)
             )
+
+        before_icon = getattr(before.icon, "url", None) if before.icon else None
+        after_icon = getattr(after.icon, "url", None) if after.icon else None
+
+        if before_icon != after_icon:
+            if before_icon is None:
+                changes.append("Server Icon Added")
+            elif after_icon is None:
+                changes.append("Server Icon Removed")
+            else:
+                changes.append("Server Icon Changed")
 
         return changes
 
