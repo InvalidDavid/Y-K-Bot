@@ -167,6 +167,14 @@ class LogsHelper:
         return MediaGallery(*items) if items else None
 
     @staticmethod
+    def _get_guild_icon_gallery(guild: discord.Guild) -> Optional[MediaGallery]:
+        if guild.icon:
+            return MediaGallery(
+                discord.MediaGalleryItem(url=str(guild.icon.url))
+            )
+        return None
+
+    @staticmethod
     def _channel_name(channel: Any) -> str:
         if channel is None:
             return "Unknown"
@@ -210,11 +218,6 @@ class LogsHelper:
 
         return ", ".join(f"`{name}`" for name in enabled)
 
-    @classmethod
-    def _overwrite_to_lines(cls, overwrite: discord.PermissionOverwrite) -> tuple[str, str]:
-        allow, deny = overwrite.pair()
-        return cls._permissions_to_text(allow), cls._permissions_to_text(deny)
-
     @staticmethod
     def _overwrite_target_label(target: Any) -> str:
         if target is None:
@@ -240,11 +243,12 @@ class LogsHelper:
 
     @classmethod
     def _permission_delta_lines(
-        cls,
-        prefix: str,
-        before: Optional[discord.Permissions],
-        after: Optional[discord.Permissions],
+            cls,
+            prefix: str,
+            before: Optional[discord.Permissions],
+            after: Optional[discord.Permissions],
     ) -> list[str]:
+        """Für Rollen - zeigt Permission Änderungen mit Emojis"""
         before_set = cls._permissions_to_set(before)
         after_set = cls._permissions_to_set(after)
 
@@ -253,11 +257,54 @@ class LogsHelper:
 
         lines: list[str] = []
 
-        if added:
-            lines.append(f"{prefix} Added {cls.ARROW} " + ", ".join(f"`{name}`" for name in added))
+        for perm in added:
+            lines.append(f"**{perm}:** ❌ ➜ ✅")
 
-        if removed:
-            lines.append(f"{prefix} Removed {cls.ARROW} " + ", ".join(f"`{name}`" for name in removed))
+        for perm in removed:
+            lines.append(f"**{perm}:** ✅ ➜ ❌")
+
+        return lines
+
+    @classmethod
+    def _overwrite_delta_lines(
+            cls,
+            prefix: str,
+            before: discord.PermissionOverwrite,
+            after: discord.PermissionOverwrite,
+    ) -> list[str]:
+        before_allow, before_deny = before.pair()
+        after_allow, after_deny = after.pair()
+
+        before_set = cls._permissions_to_set(before_allow)
+        before_deny_set = cls._permissions_to_set(before_deny)
+
+        after_set = cls._permissions_to_set(after_allow)
+        after_deny_set = cls._permissions_to_set(after_deny)
+
+        lines: list[str] = []
+
+        all_perms = before_set | before_deny_set | after_set | after_deny_set
+
+        for perm in sorted(all_perms):
+            before_state = None
+            after_state = None
+
+            if perm in before_set:
+                before_state = "✅"
+            elif perm in before_deny_set:
+                before_state = "❌"
+            else:
+                before_state = "⬜"
+
+            if perm in after_set:
+                after_state = "✅"
+            elif perm in after_deny_set:
+                after_state = "❌"
+            else:
+                after_state = "⬜"
+
+            if before_state != after_state:
+                lines.append(f"**{perm}:** {before_state} ➜ {after_state}")
 
         return lines
 
@@ -1419,22 +1466,10 @@ class LogsHelper:
         def channel_text(channel: Any) -> str:
             return self._guild_channel_ref(channel)
 
-        def server_icon(self, before: discord.Guild, after: discord.Guild):
-            if after.icon:
-                return MediaGallery(
-                    MediaGalleryItem(url=str(after.icon.url))
-                )
-            return None
-
         changes: list[str] = []
 
         before_name = text_or_none(before.name)
         after_name = text_or_none(after.name)
-
-        icon_gallery = self.server_icon(before, after)
-
-        if icon_gallery:
-            view.media_gallery = icon_gallery
 
         if before_name != after_name:
             changes.append(f"Name Changed {self.ARROW} `{before_name}` → `{after_name}`")
