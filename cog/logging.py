@@ -792,15 +792,10 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
 
         for target_id in sorted(added_ids):
             target, overwrite = after_overwrites[target_id]
-            allow_txt, deny_txt = self._overwrite_to_lines(overwrite)
 
-            changes.append(f"Overwrite Added {self.ARROW} {self._overwrite_target_label(target)}")
+            changes.append(f"Added: {self._overwrite_target_label(target)}")
 
-            if allow_txt != "None":
-                changes.append(f"Allow {self.ARROW} {allow_txt}")
 
-            if deny_txt != "None":
-                changes.append(f"Deny {self.ARROW} {deny_txt}")
 
         for target_id in sorted(updated_ids):
             before_target, before_ow = before_overwrites[target_id]
@@ -810,23 +805,16 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
             after_allow, after_deny = after_ow.pair()
 
             changes.append(
-                f"Overwrite Updated {self.ARROW} {self._overwrite_target_label(after_target or before_target)}"
+                f"### Overwrite for {self._overwrite_target_label(after_target or before_target)}"
             )
 
-            changes.extend(self._permission_delta_lines("Allow", before_allow, after_allow))
-            changes.extend(self._permission_delta_lines("Deny", before_deny, after_deny))
+            changes.extend(self._overwrite_delta_lines("Allow", before_ow, after_ow))
 
         for target_id in sorted(removed_ids):
             target, overwrite = before_overwrites[target_id]
-            allow_txt, deny_txt = self._overwrite_to_lines(overwrite)
 
-            changes.append(f"Overwrite Removed {self.ARROW} {self._overwrite_target_label(target)}")
+            changes.append(f"Removed: {self._overwrite_target_label(target)}")
 
-            if allow_txt != "None":
-                changes.append(f"Allow {self.ARROW} {allow_txt}")
-
-            if deny_txt != "None":
-                changes.append(f"Deny {self.ARROW} {deny_txt}")
 
         if not changes:
             return
@@ -874,7 +862,6 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
                 entry_actor = getattr(entry, "user", None)
                 owner_id = getattr(thread, "owner_id", None)
 
-                # Own thread created by the owner = no moderator footer.
                 if entry_actor is not None and getattr(entry_actor, "id", None) != owner_id:
                     actor = entry_actor
                     reason = entry.reason
@@ -1015,7 +1002,7 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
             changes.append(f"Color {self.ARROW} `{before.colors.primary}` → `{after.colors.primary}`")
 
         if before.hoist != after.hoist:
-            changes.append(f"Hoist {self.ARROW} `{before.hoist}` → `{after.hoist}`")
+            changes.append(f"Separated {self.ARROW} `{before.hoist}` → `{after.hoist}`")
 
         if before.mentionable != after.mentionable:
             changes.append(f"Mentionable {self.ARROW} `{before.mentionable}` → `{after.mentionable}`")
@@ -1207,6 +1194,7 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
             reason = entry.reason
 
         view = self.build_guild_update_view(
+            after=after,
             changes=changes,
             actor=actor,
             reason=reason,
