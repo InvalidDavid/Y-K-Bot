@@ -10,8 +10,12 @@ class LogsMsgHelper:
                 [
                     f"Member {self.ARROW} {member} • {member.mention}",
                     f"ID {self.ARROW} `{member.id}`",
-                    f"Bot {self.ARROW} `{member.bot}`",
-                ]
+                    *(
+                        [
+                            f"Bot {self.ARROW} `{member.bot}`" if member.bot == True else []
+                        ]
+                    )
+                ],
             ),
             limit=800,
         )
@@ -188,7 +192,6 @@ class LogsMsgHelper:
                 [
                     f"Member {self.ARROW} {after} • {after.mention}",
                     f"ID {self.ARROW} `{after.id}`",
-                    f"Current Nick {self.ARROW} `{after.nick or 'None'}`",
                 ]
             ),
             limit=800,
