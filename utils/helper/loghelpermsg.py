@@ -5,18 +5,16 @@ logger = logging.getLogger("bot.logging")
 
 class LogsMsgHelper:
     def build_member_join_view(self, member: discord.Member) -> DesignerView:
+        header_items = [
+            f"Member {self.ARROW} {member} • {member.mention}",
+            f"ID {self.ARROW} `{member.id}`",
+        ]
+
+        if member.bot:
+            header_items.append(f"Bot {self.ARROW} `{member.bot}`")
+
         header_text = self._truncate(
-            "\n".join(
-                [
-                    f"Member {self.ARROW} {member} • {member.mention}",
-                    f"ID {self.ARROW} `{member.id}`",
-                    *(
-                        [
-                            f"Bot {self.ARROW} `{member.bot}`" if member.bot == True else []
-                        ]
-                    )
-                ],
-            ),
+            "\n".join(header_items),
             limit=800,
         )
 
@@ -820,27 +818,37 @@ class LogsMsgHelper:
         )
 
     def build_guild_update_view(
-        self,
-        *,
-        changes: list[str],
-        actor: Optional[discord.abc.User],
-        reason: Optional[str],
+            self,
+            *,
+            after: discord.Guild,
+            changes: list[str],
+            actor: Optional[discord.abc.User],
+            reason: Optional[str],
     ) -> DesignerView:
         footer_text = self._moderator_footer_text(actor=actor, reason=reason, unknown=True)
 
+        items: list[Any] = [
+            TextDisplay("## Guild Updated"),
+            TextDisplay(self._truncate("\n".join(changes), limit=1400)),
+        ]
+
+        if icon_gallery := self._get_guild_icon_gallery(after):
+            items.append(icon_gallery)
+
+        items.append(
+            discord.ui.Separator(
+                divider=True,
+                spacing=discord.SeparatorSpacingSize.small,
+            )
+        )
+        items.append(TextDisplay(footer_text or "-# **Moderator:** Unknown"))
+
         return DesignerView(
             Container(
-                TextDisplay("## Server Updated"),
-                TextDisplay(self._truncate("\n".join(changes), limit=1400)),
-                discord.ui.Separator(
-                    divider=True,
-                    spacing=discord.SeparatorSpacingSize.small,
-                ),
-                TextDisplay(footer_text or "-# **Moderator:** Unknown"),
+                *self._flatten_items(items),
                 color=self._color("guild_update"),
             )
         )
-
     def build_sticker_update_view(
         self,
         *,
