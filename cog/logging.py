@@ -630,7 +630,7 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
             changes.append(f"Global Name {self.ARROW} `{before_global_name}` → `{after_global_name}`")
 
         if before_avatar != after_avatar:
-            changes.append(f"Avatar Changed {self.ARROW} Yes")
+            changes.append(f"Avatar Changed")
 
         if not changes:
             return
@@ -1191,7 +1191,6 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
             return
 
         changes = self._guild_update_change_lines(before, after)
-
         if not changes:
             return
 
@@ -1212,6 +1211,7 @@ class Logs(LogsHelper, LogsMsgHelper, commands.Cog):
             actor=actor,
             reason=reason,
         )
+
         await self._send_view(view=view)
 
     @commands.Cog.listener()
